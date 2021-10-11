@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import "./App.css";
-import axios from 'axios';
-const apiEndPoint = "https://jsonplaceholder.typicode.com/posts";
+import httpServices from "./Services/httpServices";
+import config from "./config.json"
+import {ToastContainer} from react-toastify;
+import 'react-toastify/dist/ReactToastify.css';
+
 
 class App extends Component {
   state = {
@@ -9,7 +12,7 @@ class App extends Component {
   };
 
   async componentDidMount() {
-    const { data: posts } = await axios.get(apiEndPoint);
+    const { data: posts } = await httpServices.get(config.apiEndPoint);
     this.setState({ posts });
   }
 
@@ -17,7 +20,7 @@ class App extends Component {
     console.log("Add");
 
     const obj = { title: "a", body: "b" };
-    const { data: post } = await axios.post(apiEndPoint, obj);
+    const { data: post } = await httpServices.post(config.apiEndPoint, obj);
 
     const posts=[post,...this.state.posts];
     this.setState({posts});
@@ -26,7 +29,7 @@ class App extends Component {
   handleUpdate = async(post) => {
    post.title="UPDATED";
 
-   await axios.put(apiEndPoint + '/' +post.id,post);
+   await httpServices.put(config.apiEndPoint + '/' +post.id,post);
    const posts = [post, ...this.state.posts];
    const index=posts.indexOf(post);
    posts[index]={...post};
@@ -36,15 +39,31 @@ class App extends Component {
   };
 
   handleDelete =async (post) => {
-    await axios.delete(apiEndPoint + '/'+post.id);
+    const originalpost=this.state.posts;
 
-    const posts=this.state.posts.filter(p=>p.id !==post.id);
-this.setState({ posts });
+    const posts = this.state.posts.filter((p) => p.id !== post.id);
+    this.setState({ posts });
+
+    try{
+      await httpServices.delete( "s" +config.apiEndPoint + "/" + post.id);
+      
+    }
+    catch(ex)
+{
+  if(ex.response && ex.response.status===404)
+    alert("This post is already deleted");
+ 
+ 
+  this.setState({ posts:
+    originalpost });
+
+}
   };
 
   render() {
     return (
       <React.Fragment>
+        <ToastContainer/>
         <button className="btn btn-primary" onClick={this.handleAdd}>
           Add
         </button>
