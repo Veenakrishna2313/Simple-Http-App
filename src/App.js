@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import httpServices from "./Services/httpServices";
 import config from "./config.json"
-import {ToastContainer} from react-toastify;
+import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
