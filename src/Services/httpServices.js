@@ -1,5 +1,6 @@
 import axios from "axios";
 import {toast} from 'react-toastify';
+import * as Sentry from "@sentry/react";
 
 
 axios.interceptors.response.use(null, (error) => {
@@ -9,7 +10,7 @@ axios.interceptors.response.use(null, (error) => {
     error.response.status < 500;
 
   if (!expectedError) {
-    console.log("error is", error);
+   Sentry.captureException(error);
     toast.error("An unexpected error occured");
   }
 
